@@ -1,0 +1,15 @@
+export const infoTypeList = [
+    {label: '工程招标', value: 1},
+    {label: '货物招标', value: 2},
+    {label: '服务招标', value: 3},
+    {label: '中标公示', value: 4},
+    {label: '招标预告', value: 5},
+    {label: '政府采购', value: 6},
+    {label: '企业采购', value: 7},
+    {label: 'VIP项目', value: 3030},
+    {label: '项目核准批复', value: 3020},
+    {label: '项目动态', value: 3050},
+    {label: '项目跟踪', value: 3070},
+    {label: '招标全部', value: 1000},
+    {label: '拟在建全部', value: 2000},
+]
