@@ -15,7 +15,7 @@
             <span class="column_title">栏目类型：</span>
             <RadioGroup v-model="searchData.infoType">
               <li v-for="(item,index) in columnType" :key="index">
-                <Radio :label="item.id">{{ item.name }}</Radio>
+                <Radio :label="item.value">{{ item.label }}</Radio>
               </li>
             </RadioGroup>
           </ul>
@@ -23,7 +23,7 @@
             <span class="column_title">栏目类型：</span>
             <RadioGroup v-model="searchData.infoType">
               <li v-for="(item,index) in columnType2" :key="index">
-                <Radio :label="item.id">{{ item.name }}</Radio>
+                <Radio :label="item.value">{{ item.label }}</Radio>
               </li>
             </RadioGroup>
           </ul>
@@ -31,7 +31,7 @@
             <span class="column_title">时间范围：</span>
             <RadioGroup v-model="searchData.dateRange">
               <li v-for="(item,index) in timeRange" :key="index">
-                <Radio :label="item.value">{{ item.name }}</Radio>
+                <Radio :label="item.value">{{ item.label }}</Radio>
               </li>
             </RadioGroup>
           </ul>
@@ -57,10 +57,10 @@
           <Button class="right_btn" @click="delCollectList"><Icon style="font-size: 18px;margin-right: 5px" type="ios-trash-outline" />移除收藏</Button>
         </div>
         <div style="clear: both"></div>
-        <Table class="my-table" :columns="procurement==1?columns:columns2" :data="browseData" :loading="loadingFlag" @on-selection-change="handleSelectChange">
+        <Table class="my-table" :columns="columns" :data="tableData" :loading="loadingFlag" @on-selection-change="handleSelectChange">
         </Table>
         <Page
-            v-if="browseData.length"
+            v-if="tableData.length"
             class="my-page"
             :current.sync="pageForm.pageNumber"
             :total="pageForm.pageTotal"
@@ -75,7 +75,8 @@
 <script>
 import { deepClone, filterDict, getArrayIds } from "@/utils/utils.js";
 import {downAnnouncement, exportAnnouncement, getCollectList, markImport, removeCollect } from "@/api/myAttention";
-import {infoTypeList} from "@/utils/const/attention";
+import {infoTypeList , columnType, informationType, timeRange} from "@/utils/const/attention";
+import {setColumn} from "./js/columns";
 
 export default {
   name: "index",
@@ -85,190 +86,16 @@ export default {
       isTeam: 0,
       procurement: '1',
       searchValue: "",
-      columnType: [
-        {id: 1000, name: '全部', },
-        {id: 1, name: '工程招标', },
-        {id: 2, name: '货物招标', },
-        {id: 3, name: '服务招标', },
-        {id: 6, name: '政府采购', },
-        {id: 7, name: '企业采购', },
-        {id: 5, name: '招标预告', },
-        {id: 4, name: '中标公示', },
-      ],
-      columnType2: [
-        {id: 2000, name: '全部', },
-        {id: 3030, name: 'VIP项目', },
-        {id: 3020, name: '项目核准批复',},
-        {id: 3050, name: '项目动态', },
-        {id: 3070, name: '项目跟踪', },
-      ],
-      timeRange: [
-        {name: '昨日', value: 0},
-        {name: '近一周', value: 1},
-        {name: '近两周', value: 2},
-        {name: '近一个月', value: 3},
-        {name: '近三个月', value: 4},
-        {name: '近一年', value: 5},
-        {name: '自定义时间', value: -1},
-      ],
+      columnType: columnType,
+      columnType2: informationType,
+      timeRange: timeRange,
       importantHow: [
         {id: -1, name: '全部',},
         {id: 1, name: '重要',},
         {id: 0, name: '一般',},
       ],
-      columns: [
-        {
-          type: 'selection',
-          width: 60,
-          align: 'center'
-        },
-        {
-          title: "重要程度",
-          align: "center",
-          minWidth: 80,
-          key: "signFlag",
-          render: (h, params) => {
-            let value = params.row.signFlag == 1?"重要": "一般";
-            return(
-                <div>
-                  {value}
-                </div>
-            )
-          }
-        },
-        {
-          title: "信息类型",
-          align: "center",
-          minWidth: 80,
-          key: "infoType",
-          render: (h, params) => {
-            let value = filterDict(params.row.infoType, infoTypeList, {labelKey: 'label', valueKey: 'value'})
-            return (
-                <div>{value}</div>
-            )
-          }
-        },
-        {
-          title: "标题",
-          align: "center",
-          minWidth: 380,
-          key: "title",
-          render: (h, params)=>{
-            return (
-                <a target="_blank"
-                   href={params.row.webUrl}
-                   class="infoTitle"
-                >{params.row.title}</a>
-            )
-          }
-        },
-        {
-          title: "地区",
-          align: "center",
-          minWidth: 120,
-          key: "areaName"
-        },
-        {
-          title: "发布时间",
-          align: "center",
-          minWidth: 120,
-          key: "publishDate"
-        },
-        {
-          title: "收藏时间",
-          align: "center",
-          minWidth: 120,
-          key: "createTime"
-        },
-        {
-          title: "收藏人",
-          align: "center",
-          minWidth: 120,
-          key: "name",
-          filters: [
-            { label: '小王', value: 1 },
-            { label: '小马', value: 2 },
-            { label: '小刘', value: 3 },
-          ],
-          filterMultiple: false,
-          filterMethod (value, row) {
-            console.log(1111)
-          }
-        },
-      ],
-      columns2: [
-        {
-          type: 'selection',
-          width: 60,
-          align: 'center'
-        },
-        {
-          title: "重要程度",
-          align: "center",
-          minWidth: 120,
-          key: "signFlag"
-        },
-        {
-          title: "项目类型",
-          align: "center",
-          minWidth: 120,
-          key: "infoType",
-          render: (h, params) => {
-            let value = filterDict(params.row.infoType, infoTypeList, {labelKey: 'label', valueKey: 'value'})
-            return (
-                <div>{value}</div>
-            )
-          }
-        },
-        {
-          title: "标题",
-          align: "center",
-          minWidth: 200,
-          key: "title"
-        },
-        {
-          title: "项目进展阶段",
-          key: "date1",
-          align: "center",
-          minWidth: 200,
-        },
-        {
-          title: "地区",
-          align: "center",
-          minWidth: 200,
-          key: "areaName"
-        },
-        {
-          title: "更新时间",
-          align: "center",
-          minWidth: 120,
-          key: "lastModify"
-        },
-        {
-          title: "收藏时间",
-          align: "center",
-          minWidth: 120,
-          key: "createTime"
-        },
-        {
-          title: "收藏人",
-          align: "center",
-          minWidth: 120,
-          key: "name",
-          filters: [
-            { label: '小王', value: 1 },
-            { label: '小马', value: 2 },
-            { label: '小刘', value: 3 },
-          ],
-          filterMultiple: false,
-          filterMethod (value, row) {
-            console.log(1111)
-          }
-        },
-      ],
-      browseData: [],
-      copyColumns: [],
-      copyColumns2: [],
+      columns: setColumn(this, 0, 1),
+      tableData: [],
       selection: [], //勾选选项
       pageForm: {
         pageNumber: 1, // 当前页数
@@ -282,10 +109,6 @@ export default {
     }
   },
   created() {
-    this.copyColumns = deepClone(this.columns);
-    this.copyColumns2 = deepClone(this.columns2);
-    this.columns = this.columns.filter(col => col.key !== 'name' );
-    this.columns2 = this.columns2.filter(col => col.key !== 'name' );
     this.init();
   },
   methods: {
@@ -293,20 +116,23 @@ export default {
       this.getCollectList();
     },
     //我的收藏列表
-    async getCollectList(){
+    async getCollectList(flag){
+      if (flag == 1){
+        this.pageForm.pageNumber = 1;
+      }
       let params = {
         ...this.searchData,
         pageNumber: this.pageForm.pageNumber,
         pageSize: this.pageForm.pageSize,
       }
       this.loadingFlag = true;
-      this.browseData = [];
+      this.tableData = [];
       let res = await getCollectList(params);
       const {success, result} = res;
       this.loadingFlag = false;
       if(success && result){
         console.log(result)
-        this.browseData = result.content;
+        this.tableData = result.content;
         this.pageForm.pageTotal = result.totalElements;
       }
     },
@@ -369,17 +195,12 @@ export default {
     setMyTeam(e){
       this.isTeam = e;
       this.searchData.type = e;
-      if(!e) {
-        this.columns = this.columns.filter(col => col.key !== 'name' )
-        this.columns2 = this.columns2.filter(col => col.key !== 'name' )
-      } else {
-        this.columns = this.copyColumns;
-        this.columns2 = this.copyColumns2;
-      }
+      this.columns = setColumn(this, this.isTeam, this.procurement);
       this.getCollectList();
     },
     changeRrocurement(item) {
       this.procurement = item;
+      this.columns = setColumn(this, this.isTeam, this.procurement);
       this.searchData = Object.assign({},{infoType: 1000,
         type: this.searchData.type })
       this.searchData.infoType = item == 1 ? 1000 : 2000;

@@ -43,7 +43,16 @@
             <span class="layout-text">{{ itemTitle(item) }}</span>
           </template>
           <template v-for="child in item.children">
-            <MenuItem :name="child.name" :key="'menuitem' + child.name">
+            <template v-if="child.name == 'subscripManage'">
+              <Submenu name="subscripManage" class="subBrowse">
+                <template slot="title">
+                  <span>订阅管理</span>
+                </template>
+                <MenuItem name="addSub">新建订阅</MenuItem>
+                <MenuItem name="editSub">修改订阅</MenuItem>
+              </Submenu>
+            </template>
+            <MenuItem v-else :name="child.name" :key="'menuitem' + child.name">
             <span class="empty"></span>
             <Icon :type="child.icon" :size="iconSize" :key="'icon' + child.name" v-if="showIconFlag(itemTitle(child))">
             </Icon>
@@ -56,7 +65,6 @@
       </template>
       <template v-else>
         <Submenu :name="item.name" :key="item.name">
-
           <template slot="title">
             <Icon v-if="showIconFlag(itemTitle(item))" :type="item.icon" :size="iconSize"></Icon>
             <span class="iconfont" v-if="itemTitle(item) === '找项目'">&#xe60d;</span>
@@ -67,7 +75,6 @@
             <span class="layout-text">{{ itemTitle(item) }}</span>
           </template>
           <template v-for="child in item.children">
-
             <template v-if="child.name == 'myBrowse'">
               <Submenu name="myBrowse" class="subBrowse">
                 <template slot="title">
@@ -105,6 +112,7 @@
           "专题频道",
           "我的收藏",
           '我的订阅',
+          '订阅信息',
           '邮件订阅',
           '订阅总览',
           '订阅管理',
@@ -172,6 +180,13 @@
           this.singleOpenName = ['myAttention'];
           if(this.$route.path.includes('myBrowse')) {
             this.singleOpenName = ['myAttention', 'myBrowse'];
+          }
+          return
+        }
+        if (this.$route.path.includes('mySubscript')){
+          this.singleOpenName = ['mySubscript'];
+          if(this.$route.name == 'addSub' || this.$route.name == 'editSub') {
+            this.singleOpenName = ['mySubscript', 'subscripManage'];
           }
           return
         }

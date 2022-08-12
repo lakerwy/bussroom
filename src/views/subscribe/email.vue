@@ -224,6 +224,8 @@ import {
   getAllGroup,
   getMailSubType,
   userInfo,
+  removeCollection,
+  saveCollection,
 } from "@/api/index.js";
 import qs from "qs";
 import axios from "axios";
@@ -548,24 +550,19 @@ export default {
           title: "收藏",
           width: 90,
           align: "center",
-          render: (createElement, parmas) => {
+          render: (h,params)=>{
             let type = "ios-star-outline";
             let color = "";
-            if (parmas.row.isCollected) {
+            if (params.row.isCollected) {
               type =
-                parmas.row.isCollected === "0"
-                  ? "ios-star-outline"
-                  : "ios-star";
-              color = parmas.row.isCollected === "0" ? "" : "#2d8cf0";
+                  params.row.isCollected === "0"
+                      ? "ios-star-outline"
+                      : "ios-star";
+              color = params.row.isCollected === "0" ? "" : "#2d8cf0";
             }
-            return createElement({
-              template:
-                '<Icon  size="24" title="收藏" class="actionBtn" color="' +
-                color +
-                '" type="' +
-                type +
-                '"  />',
-            });
+            return (
+                <Icon style="cursor: pointer;" size="24" title="收藏" class="actionBtn" color={color} type={type} onClick={()=>this.collect(params)} />
+            )
           },
         },
         {
@@ -674,7 +671,8 @@ export default {
                 return item;
               });
               this.selectList = [];
-              // this.handleSearch(0);
+
+              this.handleSearch(0);
             }
             this.collectLoading = false;
           });
@@ -925,6 +923,93 @@ export default {
       });
     },
     mailModeCancel() {},
+    //收藏与取消收藏
+    collect(params) {
+      let type = 8;
+      if (type == "中标公示") type = 4;
+      // 收藏
+      if (!params.row.isCollected || params.row.isCollected=="0") {
+        saveCollection({
+          infoId: params.row.id,
+          name: params.row.title,
+          url: params.row.url,
+          type: type,
+        }).then(res => {
+          if (res.success) {
+            this.$set(this.data[params.index], 'isCollected', res.result.id)
+            this.$Message.success("收藏成功")
+          }
+        })
+      } else {
+        removeCollection({
+          // id: params.row.id,
+          id: params.row.isCollected
+        }).then(res => {
+          if (res.success) {
+            this.data[params.index].isCollected = 0;
+            this.$Message.success("取消收藏成功")
+          }
+        })
+      }
+
+    },
+    setType(item){
+      let type;
+      let typeIndex;
+      if (
+          item.table_name == "ZBXX" &&
+          item.table_name2 == "ZBGG" &&
+          item.classbId.indexOf("001") > -1
+      ) {
+        type = "工程招标";
+        typeIndex = 1;
+      } else if (
+          item.table_name == "ZBXX" &&
+          item.table_name2 == "ZBGG" &&
+          item.classbId.indexOf("002") > -1
+      ) {
+        type = "货物招标";
+        typeIndex = 2;
+      } else if (
+          item.table_name == "ZBXX" &&
+          item.table_name2 == "ZBGG" &&
+          item.classbId.indexOf("003") > -1
+      ) {
+        type = "服务招标";
+        typeIndex = 3;
+      } else if (
+          item.table_name == "ZBXX" &&
+          item.table_name2 == "ZBGS"
+      ) {
+        type = "中标公示";
+        typeIndex = 4;
+      } else if (
+          item.table_name == "ZBXX" &&
+          item.table_name2 == "ZBYG"
+      ) {
+        type = "招标预告";
+        typeIndex = 5;
+      } else if (
+          item.table_name == "CGXX" &&
+          item.table_name2 == "ZFCG"
+      ) {
+        type = "政府采购";
+        typeIndex = 6;
+      } else if (
+          item.table_name == "CGXX" &&
+          item.table_name2 == "QYCG"
+      ) {
+        type = "企业采购";
+        typeIndex = 7;
+      } else if (item.table_name == "XMXX") {
+        type = "项目信息";
+        typeIndex = 8;
+      } else {
+        type = "工程招标";
+        typeIndex = 1;
+      }
+      return {type, typeIndex}
+    }
   },
    mounted() {
     this.init();

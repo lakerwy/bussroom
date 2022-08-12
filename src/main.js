@@ -31,6 +31,11 @@ import VueLazyload from 'vue-lazyload'
 import VueClipboard from 'vue-clipboard2'
 import VueApexCharts from 'vue-apexcharts'
 import SEL from '@/libs/commonSel';
+import Treeselect from '@riophae/vue-treeselect'
+// import the styles
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+
+Vue.component('Treeselect', Treeselect);
 
 // 导入行政区域组件
 import iRegion from '@/components/region/region.min';

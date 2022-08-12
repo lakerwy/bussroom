@@ -173,6 +173,9 @@ export const otherRouter = {
         { path: '/homepage', title: '首页', name: 'homepage', component: () => import('@/views/homepage/index.vue') },
         { path: '/myAttention/myBrowse1', title: '商机项目查询', name: 'myBrowse1', component: () => import('@/views/myAttention/myBrowse/index.vue') },
         { path: '/myAttention/myBrowse2', title: '历史浏览记录', name: 'myBrowse2', component: () => import('@/views/myAttention/myBrowse/historyBrowse.vue') },
+
+        { path: '/mySubscript/addSub', title: '新建订阅', name: 'addSub', component: () => import('@/views/mySubscript/subscripManage/addSub.vue') },
+        { path: '/mySubscript/editSub', title: '修改订阅', name: 'editSub', component: () => import('@/views/mySubscript/subscripManage/editSub.vue') },
         // { path: '/myAttention/myProject', title: '我的项目', name: 'myProject', component: () => import('@/views/myAttention/myProject/index.vue') },
         // { path: '/myAttention/myExport', title: '我的导出', name: 'myExport', component: () => import('@/views/myAttention/myExport/index.vue') },
         // { path: '/myAttention/myCollection', title: '我的收藏', name: 'myCollection', component: () => import('@/views/myAttention/myCollection/index.vue') },

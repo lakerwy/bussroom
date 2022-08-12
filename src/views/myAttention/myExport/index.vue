@@ -10,12 +10,12 @@
         <TabPane label="导出明细" name="2"></TabPane>
       </Tabs>
       <div class="list" v-if="procurement==1">
-        <div class="explain"><Icon class="icon" type="ios-information-circle-outline" />导出文件7日内可以重复下载，过期后将无法重复下载，需要重新选择公告导出</div>
+        <div class="my-explain"><Icon class="icon" type="ios-information-circle-outline" />导出文件7日内可以重复下载，过期后将无法重复下载，需要重新选择公告导出</div>
         <div class="timeRange">
           <span>时间范围：</span>
           <RadioGroup v-model="timeRangeValue">
             <span class="mr-20" v-for="(item,index) in timeRange" :key="index">
-              <Radio :label="item.value">{{item.name}}</Radio>
+              <Radio :label="item.value">{{item.label}}</Radio>
             </span>
           </RadioGroup>
           <DatePicker
@@ -34,9 +34,9 @@
           <Button class="right_btn" type="primary">导出增量</Button>
         </div>
         <div style="clear: both"></div>
-        <Table class="my-table" :columns="columns" :data="browseData"></Table>
+        <Table class="my-table" :columns="columns" :data="tableData"></Table>
         <Page
-            v-if="browseData.length"
+            v-if="tableData.length"
             class="my-page"
             :current.sync="pageForm.pageNumber"
             :total="pageForm.pageTotal"
@@ -56,10 +56,10 @@
           </div>
         </div>
         <div style="clear: both"></div>
-        <Table class="my-table" :columns="columns2" :data="browseData" :loading="loadingFlag" @on-selection-change="handleSelectChange">
+        <Table class="my-table" :columns="columns2" :data="tableData" :loading="loadingFlag" @on-selection-change="handleSelectChange">
         </Table>
         <Page
-            v-if="browseData.length"
+            v-if="tableData.length"
             class="my-page"
             :current.sync="pageForm.pageNumber"
             :total="pageForm.pageTotal"
@@ -75,7 +75,7 @@
 <script>
 import { deepClone, filterDict } from "@/utils/utils.js";
 import {downAnnouncement, exportAnnouncement, getMyExportDetail} from "../../../api/myAttention";
-import {infoTypeList} from "@/utils/const/attention";
+import {infoTypeList, timeRange} from "@/utils/const/attention";
 
 export default {
   name: "index",
@@ -86,15 +86,7 @@ export default {
       procurement: '1',
       biddingConstruct: 1,
       timeRangeValue: 0,
-      timeRange: [
-        {name: '昨日', value: 0},
-        {name: '近一周', value: 1},
-        {name: '近两周', value: 2},
-        {name: '近一个月', value: 3},
-        {name: '近三个月', value: 4},
-        {name: '近一年', value: 5},
-        {name: '自定义时间', value: -1},
-      ],
+      timeRange: timeRange,
       dateArr: ["", ""],
       dateOption: {
         disabledDate(date) {
@@ -242,7 +234,7 @@ export default {
       ],
       copyColumns: [],
       copyColumns2: [],
-      browseData: [],
+      tableData: [],
       selection: [], //勾选选项
       pageForm: {
         pageNumber: 1, // 当前页数
@@ -274,13 +266,13 @@ export default {
         pageSize: this.pageForm.pageSize,
       }
       this.loadingFlag = true;
-      this.browseData = [];
+      this.tableData = [];
       let res = await getMyExportDetail(Object.assign(params,this.searchData));
       const {success, result} = res;
       this.loadingFlag = false;
       if(success && result){
         console.log(result)
-        this.browseData = result.content;
+        this.tableData = result.content;
         this.pageForm.pageTotal = result.totalElements;
       }
     },
@@ -396,19 +388,6 @@ ul {
     //height: 1000px;
 
     .list {
-      .explain {
-        height: 33px;
-        line-height: 33px;
-        background: #FFFBF2;
-        width: 100%;
-        border: 1px solid #FFC531;
-        border-radius: 4px;
-        .icon {
-          font-size: 18px;
-          color: #FFC531;
-          margin: 0 5px;
-        }
-      }
       .timeRange {
         margin-top: 10px;
         display: inline-block;

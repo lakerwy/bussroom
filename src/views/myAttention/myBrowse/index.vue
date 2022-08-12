@@ -43,8 +43,8 @@
         <div class="search_main">
           <div class="formining" v-if="procurement==1">
             <h3>筛选条件：</h3>
-            <ul class="columm_type">
-              栏目类型：
+            <ul class="columm_type" style="display: flex">
+              <span>栏目类型：</span>
               <RadioGroup v-model="searchForm.table">
                 <li v-for="(item,index) in columnType" :key="index"><Radio :label="item.id">{{ item.name }}</Radio></li>
               </RadioGroup>
@@ -118,8 +118,8 @@
                 </li>
               </RadioGroup>
             </ul>
-            <ul class="columm_type">
-              进展阶段：
+            <ul class="columm_type" style="display: flex">
+              <span>进展阶段：</span>
               <RadioGroup v-model="searchForm.stage">
                 <li v-for="(item,index) in developmentPhase" :key="index">
                   <Radio :label="item.id">{{ item.name }}</Radio>
@@ -179,10 +179,10 @@
           <Button class="right_btn">取消收藏</Button>
         </div>
         <div style="clear: both"></div>
-        <Table class="my-table" :columns="columns" :data="browseData" :loading="loadingFlag">
+        <Table class="my-table" :columns="columns" :data="tableData" :loading="loadingFlag">
         </Table>
         <Page
-            v-if="browseData.length"
+            v-if="tableData.length"
             class="my-page"
             :current.sync="pageForm.pageNumber"
             :total="pageForm.pageTotal"
@@ -335,7 +335,7 @@ export default {
           minWidth: 120,
         },
       ],
-      browseData: [],
+      tableData: [],
       copyColumns: [],
       pageForm: {
         pageNumber: 1, // 当前页数
@@ -360,36 +360,36 @@ export default {
     // 招标与采购查询
     async getZtbSearch(){
       let params = {
-        ...this.searchData,
+        ...this.searchForm,
         page: this.pageForm.pageNumber,
         rows: this.pageForm.pageSize,
       }
       this.loadingFlag = true;
-      this.browseData = [];
+      this.tableData = [];
       let res = await getZtbSearch(params);
       const {success, result} = res;
       this.loadingFlag = false;
       if(success && result){
         console.log(result)
-        this.browseData = result.content;
+        this.tableData = result.content;
         this.pageForm.pageTotal = result.totalElements;
       }
     },
     // 拟在建查询
     async getNzjSearch(){
       let params = {
-        ...this.searchData,
+        ...this.searchForm,
         page: this.pageForm.pageNumber,
         rows: this.pageForm.pageSize,
       }
       this.loadingFlag = true;
-      this.browseData = [];
+      this.tableData = [];
       let res = await getNzjSearch(params);
       const {success, result} = res;
       this.loadingFlag = false;
       if(success && result){
         console.log(result)
-        this.browseData = result.content;
+        this.tableData = result.content;
         this.pageForm.pageTotal = result.totalElements;
       }
     },
@@ -409,7 +409,7 @@ export default {
     //收藏和取消收藏
     changeShare(params){
       // console.log(params);
-      this.browseData[params.index].share = !this.browseData[params.index].share;
+      this.tableData[params.index].share = !this.tableData[params.index].share;
     },
   }
 }
@@ -498,6 +498,7 @@ ul {
                   overflow: hidden;
                   white-space: nowrap;
                   text-overflow: ellipsis;
+                  line-height: 34px;
                 }
               }
             }

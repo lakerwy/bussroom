@@ -10,15 +10,15 @@
       </Tabs>
       <div class="list">
         <div v-if="procurement==1">
-          <Table class="my-table" :columns="columns" :data="browseData" :loading="loadingFlag">
+          <Table class="my-table" :columns="columns" :data="tableData" :loading="loadingFlag">
           </Table>
         </div>
         <div v-if="procurement==2">
-          <Table class="my-table" :columns="columns2" :data="browseData" :loading="loadingFlag">
+          <Table class="my-table" :columns="columns2" :data="tableData" :loading="loadingFlag">
           </Table>
         </div>
         <Page
-            v-if="browseData.length"
+            v-if="tableData.length"
             class="my-page"
             :current.sync="pageForm.pageNumber"
             :total="pageForm.pageTotal"
@@ -116,7 +116,7 @@ export default {
           minWidth: 120,
         }
       ],
-      browseData: [],
+      tableData: [],
       pageForm: {
         pageNumber: 1, // 当前页数
         pageTotal: 100,
@@ -132,43 +132,49 @@ export default {
       this.getFollowList();
     },
     //项目跟进
-    async getFollowList(){
+    async getFollowList(flag){
+      if (flag == 1){
+        this.pageForm.pageNumber = 1;
+      }
       let params = {
         pageNumber: this.pageForm.pageNumber,
         pageSize: this.pageForm.pageSize,
       }
       this.loadingFlag = true;
-      this.browseData = [];
+      this.tableData = [];
       let res = await getFollowList(params);
       const {success, result} = res;
       this.loadingFlag = false;
       if(success){
-        this.browseData = result.content;
+        this.tableData = result.content;
         this.pageForm.pageTotal = result.totalElements;
       }
     },
     //项目联系人
-    async getProjectPerson(){
+    async getProjectPerson(flag){
+      if (flag == 1){
+        this.pageForm.pageNumber = 1;
+      }
       let params = {
         pageNumber: this.pageForm.pageNumber,
         pageSize: this.pageForm.pageSize,
       }
       this.loadingFlag = true;
-      this.browseData = [];
+      this.tableData = [];
       let res = await getProjectPerson(params);
       const {success, result} = res;
       this.loadingFlag = false;
       if(success && result){
-        this.browseData = result.content;
+        this.tableData = result.content;
         this.pageForm.pageTotal = result.totalElements;
       }
     },
     changeRrocurement(item) {
       this.procurement = item;
       if(item == 1){
-        this.getFollowList();
+        this.getFollowList(1);
       } else {
-        this.getProjectPerson();
+        this.getProjectPerson(1);
       }
     },
     pageChange(){

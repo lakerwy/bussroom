@@ -54,7 +54,7 @@
           <Button class="right_btn" ><Icon style="font-size: 18px;margin-right: 5px" type="ios-share-alt-outline" />批量分享</Button>
         </div>
         <div style="clear: both"></div>
-        <Table class="my-table" :columns="procurement==1?columns:columns2" :data="browseData"></Table>
+        <Table class="my-table" :columns="procurement==1?columns:columns2" :data="tableData"></Table>
         <Page
             class="my-page"
             :total="100"
@@ -178,7 +178,7 @@ export default {
           minWidth: 120,
         },
       ],
-      browseData: [
+      tableData: [
         {},{},{},{},{},{},{},{},{},
       ],
       copyColumns: [],
@@ -228,6 +228,8 @@ ul {
         font-family: Microsoft YaHei-Regular, Microsoft YaHei;
         font-weight: 400;
         color: #999999;
+        display: inline-block;
+        width: 80px;
       }
       .columm_type {
         height: 33px;

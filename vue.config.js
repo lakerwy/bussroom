@@ -16,10 +16,16 @@ module.exports = {
         proxy: {
             '/studio': {
                 // target: 'http://59.110.153.129:8080', // 测试环境
-                // target: 'http://39.106.231.193:8080', // 测试环境
+                target: 'http://39.106.231.193:8080', // 测试环境
                 // target: 'https://hive.esep.cn', // 生产环境
-                target: 'http://192.168.110.107:8888', //程正才
+                // target: 'http://192.168.110.107:8888', //程正才
                 ws: true
+            },
+            '/': {
+                /* 目标代理服务器地址 */
+                target: 'http://47.94.116.164:8081/', //网站测试环境
+                /* 允许跨域 */
+                changeOrigin: true,
             },
             '/foo': {
                 target: '<other_url>'

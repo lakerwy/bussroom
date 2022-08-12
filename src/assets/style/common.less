@@ -1,6 +1,6 @@
 
 .card {
-  height: 100%;
+  //height: 100%;
   margin-bottom: 20px;
   box-shadow: 5px 5px 3px #88888873;
   border: none;
@@ -71,6 +71,9 @@
 
 .my-table {
   margin-top: 10px;
+  /deep/ .ivu-table-body {
+    min-height: 350px;
+  }
   /deep/.ivu-table-tip{
     tr {
       height: 400px;
@@ -88,5 +91,26 @@
       background: #EDF2FF;
       height: 50px;
     }
+  }
+  /deep/ .ivu-table-fixed-header {
+    th {
+      background: #EDF2FF;
+      height: 50px;
+    }
+  }
+}
+
+//提示性公告样式
+.my-explain {
+  height: 33px;
+  line-height: 33px;
+  background: #FFFBF2;
+  width: 100%;
+  border: 1px solid #FFC531;
+  border-radius: 4px;
+  .icon {
+    font-size: 18px;
+    color: #FFC531;
+    margin: 0 5px;
   }
 }

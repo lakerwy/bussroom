@@ -15,7 +15,7 @@
             <span class="column_title">栏目类型：</span>
             <RadioGroup v-model="searchData.infoType">
               <li v-for="(item,index) in columnType" :key="index">
-                <Radio :label="item.id">{{ item.name }}</Radio>
+                <Radio :label="item.value">{{ item.label }}</Radio>
               </li>
             </RadioGroup>
           </ul>
@@ -23,7 +23,7 @@
             <span class="column_title">栏目类型：</span>
             <RadioGroup v-model="searchData.infoType">
               <li v-for="(item,index) in columnType2" :key="index">
-                <Radio :label="item.id">{{ item.name }}</Radio>
+                <Radio :label="item.value">{{ item.label }}</Radio>
               </li>
             </RadioGroup>
           </ul>
@@ -31,7 +31,7 @@
             <span class="column_title">时间范围：</span>
             <RadioGroup v-model="searchData.dateRange">
               <li v-for="(item,index) in timeRange" :key="index">
-                <Radio :label="item.value">{{ item.name }}</Radio>
+                <Radio :label="item.value">{{ item.label }}</Radio>
               </li>
             </RadioGroup>
           </ul>
@@ -46,10 +46,10 @@
           <Button class="right_btn" @click="delShareList"><Icon style="font-size: 18px;margin-right: 5px" type="ios-trash-outline" />移除分享</Button>
         </div>
         <div style="clear: both"></div>
-        <Table class="my-table" :columns="procurement==1?columns:columns2" :data="browseData" :loading="loadingFlag" @on-selection-change="handleSelectChange">
+        <Table class="my-table" :columns="columns" :data="tableData" :loading="loadingFlag" @on-selection-change="handleSelectChange">
         </Table>
         <Page
-            v-if="browseData.length"
+            v-if="tableData.length"
             class="my-page"
             :current.sync="pageForm.pageNumber"
             :total="pageForm.pageTotal"
@@ -62,9 +62,10 @@
 </template>
 
 <script>
-import { deepClone, filterDict, getArrayIds } from "@/utils/utils.js";
-import {infoTypeList} from "@/utils/const/attention";
+import {  getArrayIds } from "@/utils/utils.js";
+import { columnType, informationType, timeRange } from "@/utils/const/attention";
 import {downAnnouncement, exportAnnouncement, getMyShareList, removeShare} from "@/api/myAttention";
+import {setColumn} from "./js/columns";
 
 export default {
   name: "index",
@@ -74,184 +75,11 @@ export default {
       isTeam: 0,
       procurement: '1',
       searchValue: "",
-      columnType: [
-        {id: 1000, name: '全部', },
-        {id: 1, name: '工程招标', },
-        {id: 2, name: '货物招标', },
-        {id: 3, name: '服务招标', },
-        {id: 6, name: '政府采购', },
-        {id: 7, name: '企业采购', },
-        {id: 5, name: '招标预告', },
-        {id: 4, name: '中标公示', },
-      ],
-      columnType2: [
-        {id: 2000, name: '全部', },
-        {id: 3030, name: 'VIP项目', },
-        {id: 3020, name: '项目核准批复',},
-        {id: 3050, name: '项目动态', },
-        {id: 3070, name: '项目跟踪', },
-      ],
-      timeRange: [
-        {name: '昨日', value: 0},
-        {name: '近一周', value: 1},
-        {name: '近两周', value: 2},
-        {name: '近一个月', value: 3},
-        {name: '近三个月', value: 4},
-        {name: '近一年', value: 5},
-        {name: '自定义时间', value: -1},
-      ],
-      columns: [
-        {
-          type: 'selection',
-          width: 60,
-          align: 'center'
-        },
-        {
-          title: "信息类型",
-          align: "center",
-          minWidth: 80,
-          key: "infoType",
-          render: (h, params) => {
-            let value = filterDict(params.row.infoType, infoTypeList, {labelKey: 'label', valueKey: 'value'})
-            return (
-                <div>{value}</div>
-            )
-          }
-        },
-        {
-          title: "标题",
-          align: "center",
-          minWidth: 300,
-          key: "title",
-          render: (h, params)=>{
-            return (
-                <a target="_blank"
-                   href={'https://'+ params.row.webUrl}
-                   class="infoTitle"
-                >{params.row.title}</a>
-            )
-          }
-        },
-        {
-          title: "地区",
-          key: "areaName",
-          align: "center",
-          minWidth: 120,
-        },
-        {
-          title: "发布时间",
-          key: "publishDate",
-          align: "center",
-          minWidth: 120,
-        },
-        {
-          title: "分享时间",
-          key: "createTime",
-          align: "center",
-          minWidth: 120,
-        },
-        {
-          title: "分享人",
-          align: "center",
-          minWidth: 120,
-          key: "sharer",
-          filters: [
-            { label: '小王', value: 1 },
-            { label: '小马', value: 2 },
-            { label: '小刘', value: 3 },
-          ],
-          filterMultiple: false,
-          filterMethod (value, row) {
-            console.log(1111)
-          }
-        },
-        {
-          title: "被分享人",
-          key: "sharedBy",
-          align: "center",
-          minWidth: 120,
-        },
-      ],
-      columns2: [
-        {
-          type: 'selection',
-          width: 60,
-          align: 'center'
-        },
-        {
-          title: "项目类型",
-          align: "center",
-          minWidth: 120,
-          key: "infoType",
-          render: (h, params) => {
-            let value = filterDict(params.row.infoType, infoTypeList, {labelKey: 'label', valueKey: 'value'})
-            return (
-                <div>{value}</div>
-            )
-          }
-        },
-        {
-          title: "标题",
-          align: "center",
-          minWidth: 200,
-          key: "title",
-          render: (h, params)=>{
-            return (
-                <a target="_blank"
-                   href={'https://'+ params.row.webUrl}
-                   class="infoTitle"
-                >{params.row.title}</a>
-            )
-          }
-        },
-        {
-          title: "项目进展阶段",
-          align: "center",
-          minWidth: 200,
-        },
-        {
-          title: "地区",
-          align: "center",
-          minWidth: 200,
-          key: "areaName"
-        },
-        {
-          title: "更新时间",
-          align: "center",
-          minWidth: 120,
-          key: "lastModify"
-        },
-        {
-          title: "分享时间",
-          align: "center",
-          minWidth: 120,
-          key: "createTime"
-        },
-        {
-          title: "分享人",
-          align: "center",
-          minWidth: 120,
-          key: "sharer",
-          filters: [
-            { label: '小王', value: 1 },
-            { label: '小马', value: 2 },
-            { label: '小刘', value: 3 },
-          ],
-          filterMultiple: false,
-          filterMethod (value, row) {
-            console.log(1111)
-          }
-        },
-        {
-          title: "被分享人",
-          align: "center",
-          minWidth: 120,
-          key: "sharedBy",
-        },
-      ],
-      browseData: [],
-      copyColumns: [],
-      copyColumns2: [],
+      columnType: columnType,
+      columnType2: informationType,
+      timeRange: timeRange,
+      columns: setColumn(this, 0, 1),
+      tableData: [],
       selection: [],
       pageForm: {
         pageNumber: 1, // 当前页数
@@ -265,10 +93,6 @@ export default {
     }
   },
   created() {
-    this.copyColumns = deepClone(this.columns);
-    this.copyColumns2 = deepClone(this.columns2);
-    this.columns = this.columns.filter(col => col.key !== 'sharer' )
-    this.columns2 = this.columns2.filter(col => col.key !== 'sharer' )
     this.init();
   },
   methods: {
@@ -276,20 +100,23 @@ export default {
       this.getMyShareList();
     },
     //我的分享列表
-    async getMyShareList(){
+    async getMyShareList(flag){
+      if (flag == 1){
+        this.pageForm.pageNumber = 1;
+      }
       let params = {
         ...this.searchData,
         pageNumber: this.pageForm.pageNumber,
         pageSize: this.pageForm.pageSize,
       }
       this.loadingFlag = true;
-      this.browseData = [];
+      this.tableData = [];
       let res = await getMyShareList(params);
       const {success, result} = res;
       this.loadingFlag = false;
       if(success && result){
         console.log(result)
-        this.browseData = result.content;
+        this.tableData = result.content;
         this.pageForm.pageTotal = result.totalElements;
       }
     },
@@ -336,21 +163,16 @@ export default {
     setMyTeam(e){
       this.isTeam = e;
       this.searchData.type = e;
-      if(!e) {
-        this.columns = this.columns.filter(col => col.key !== 'sharer' )
-        this.columns2 = this.columns2.filter(col => col.key !== 'sharer' )
-      } else {
-        this.columns = this.copyColumns;
-        this.columns2 = this.copyColumns2;
-      }
-      this.getMyShareList();
+      this.columns = setColumn(this, this.isTeam, this.procurement);
+      this.getMyShareList(1);
     },
     changeRrocurement(item) {
       this.procurement = item;
+      this.columns = setColumn(this, this.isTeam, this.procurement);
       this.searchData = Object.assign({},{infoType: 1000,
         type: this.searchData.type })
       this.searchData.infoType = item == 1 ? 1000 : 2000;
-      this.getMyShareList();
+      this.getMyShareList(1);
     },
 
   }
